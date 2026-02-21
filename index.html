@@ -143,10 +143,16 @@ nav {
   position:relative; overflow:hidden;
   border:1px solid var(--border);
   background: var(--surface);
-  cursor:default;
+  cursor:pointer;
   transition: transform .25s ease, box-shadow .25s ease;
+  user-select: none;
 }
 .stat-card:hover { transform:translateY(-4px); }
+.stat-card.active { transform:translateY(-4px) scale(1.03); outline: 2px solid currentColor; outline-offset: 2px; }
+.stat-card:nth-child(1).active { outline-color: var(--blue); box-shadow: 0 8px 32px rgba(59,130,246,0.35); }
+.stat-card:nth-child(2).active { outline-color: var(--cyan); box-shadow: 0 8px 32px rgba(6,214,160,0.35); }
+.stat-card:nth-child(3).active { outline-color: var(--purple); box-shadow: 0 8px 32px rgba(167,139,250,0.35); }
+.stat-card:nth-child(4).active { outline-color: var(--yellow); box-shadow: 0 8px 32px rgba(251,191,36,0.35); }
 
 .stat-card:nth-child(1) {
   border-color: rgba(59,130,246,0.25);
@@ -423,7 +429,17 @@ footer {
   font-size:.68rem; color:#1e293b;
 }
 
-/* RESPONSIVE */
+.card.hidden { display: none; }
+
+/* filter hint on stat cards */
+.stat-card .filter-hint {
+  font-size:.52rem; color:#334155; font-family:'Space Mono',monospace;
+  letter-spacing:.08em; margin-top:.25rem; display:block;
+  transition: color .2s;
+}
+.stat-card:hover .filter-hint, .stat-card.active .filter-hint { color: #64748b; }
+
+/* Section title text updates */
 @media(max-width:640px){
   .hero { padding:4rem 1rem 2.5rem; }
   .cards-grid { grid-template-columns:1fr; }
@@ -527,25 +543,29 @@ nav{top:30px!important}
 
 <!-- STATS — values injected by JS -->
 <div class="stats-strip">
-  <div class="stat-card">
+  <div class="stat-card" data-filter="all">
     <span class="stat-icon">🚀</span>
     <span class="stat-val" id="totalProjects" data-target="0">0</span>
     <span class="stat-lbl">Projects</span>
+    <span class="filter-hint">click to filter</span>
   </div>
-  <div class="stat-card">
+  <div class="stat-card" data-filter="live">
     <span class="stat-icon">✅</span>
     <span class="stat-val" id="liveCount" data-target="0">0</span>
     <span class="stat-lbl">Live</span>
+    <span class="filter-hint">click to filter</span>
   </div>
-  <div class="stat-card">
+  <div class="stat-card" data-filter="beta">
     <span class="stat-icon">🧪</span>
     <span class="stat-val" id="betaCount" data-target="0">0</span>
     <span class="stat-lbl">Beta</span>
+    <span class="filter-hint">click to filter</span>
   </div>
-  <div class="stat-card">
+  <div class="stat-card" data-filter="build">
     <span class="stat-icon">⚙️</span>
     <span class="stat-val" id="buildCount" data-target="0">0</span>
     <span class="stat-lbl">Build</span>
+    <span class="filter-hint">click to filter</span>
   </div>
 </div>
 
@@ -556,10 +576,7 @@ nav{top:30px!important}
       <span>📁</span> All Projects
       <span class="section-count" id="sectionCount">0</span>
     </div>
-    <div style="display:flex;gap:.5rem;">
-      <button class="btn btn-outline btn-sm">Filter</button>
-      <button class="btn btn-outline btn-sm">Sort</button>
-    </div>
+   
   </div>
   <div class="cards-grid" id="cardsGrid"></div>
 </div>
@@ -680,7 +697,46 @@ projects.forEach(p => {
 });
 
 // =============================================
-// COUNT-UP ANIMATION
+// FILTER FUNCTIONALITY
+// =============================================
+const filterLabels = {
+  all:   { icon: '📁', text: 'All Projects' },
+  live:  { icon: '✅', text: 'Live Projects' },
+  beta:  { icon: '🧪', text: 'Beta Projects' },
+  build: { icon: '⚙️', text: 'In Build' },
+};
+
+function applyFilter(status) {
+  const cards = grid.querySelectorAll('.card');
+  let visibleCount = 0;
+
+  cards.forEach(card => {
+    const match = status === 'all' || card.dataset.status === status;
+    card.classList.toggle('hidden', !match);
+    if (match) visibleCount++;
+  });
+
+  // Update section title
+  const lbl = filterLabels[status] || filterLabels.all;
+  document.querySelector('.section-title').innerHTML =
+    `<span>${lbl.icon}</span> ${lbl.text}
+     <span class="section-count" id="sectionCount">${visibleCount}</span>`;
+
+  // Update active stat card
+  document.querySelectorAll('.stat-card').forEach(sc => {
+    sc.classList.toggle('active', sc.dataset.filter === status);
+  });
+}
+
+// Attach click listeners to stat cards
+document.querySelectorAll('.stat-card[data-filter]').forEach(sc => {
+  sc.addEventListener('click', () => applyFilter(sc.dataset.filter));
+});
+
+// Default: show all, highlight "Projects" card
+applyFilter('all');
+
+
 // =============================================
 function countUp(el) {
   const target = parseInt(el.dataset.target) || 0;
