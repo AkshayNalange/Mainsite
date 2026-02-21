@@ -1,0 +1,665 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>My Projects</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Syne:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root {
+  --blue: #3b82f6;
+  --cyan: #06d6a0;
+  --purple: #a78bfa;
+  --pink: #f472b6;
+  --yellow: #fbbf24;
+  --bg: #0a0d14;
+  --surface: #111520;
+  --border: rgba(255,255,255,0.07);
+}
+* { margin:0; padding:0; box-sizing:border-box; }
+html { scroll-behavior:smooth; }
+
+body {
+  font-family:'Syne', sans-serif;
+  background: var(--bg);
+  color: #e2e8f0;
+  min-height:100vh;
+  overflow-x:hidden;
+}
+
+#codeCanvas {
+  position:fixed; top:0; left:0;
+  width:100%; height:100%;
+  z-index:0; opacity:0.1;
+}
+
+.bg-overlay {
+  position:fixed; inset:0;
+  background:
+    radial-gradient(ellipse 60% 40% at 80% 10%, rgba(59,130,246,0.15) 0%, transparent 60%),
+    radial-gradient(ellipse 50% 40% at 10% 90%, rgba(167,139,250,0.12) 0%, transparent 55%),
+    radial-gradient(ellipse 40% 30% at 50% 50%, rgba(6,214,160,0.06) 0%, transparent 60%);
+  z-index:1; pointer-events:none;
+}
+
+nav, .hero, .projects-section, footer, .stats-strip { position:relative; z-index:2; }
+
+/* NAV */
+nav {
+  background: rgba(10,13,20,0.85);
+  backdrop-filter: blur(20px);
+  border-bottom: 1px solid var(--border);
+  padding: 0 2rem;
+  height: 62px;
+  display:flex; align-items:center; justify-content:space-between;
+  position:sticky; top:0; z-index:100;
+}
+.nav-brand {
+  font-size:1rem; font-weight:800; color:#fff; text-decoration:none;
+  display:flex; align-items:center; gap:.6rem; letter-spacing:.02em;
+}
+.nav-brand-orb {
+  width:26px; height:26px; border-radius:50%;
+  background: conic-gradient(from 0deg, var(--blue), var(--cyan), var(--purple), var(--pink), var(--blue));
+  animation: spin 4s linear infinite;
+  flex-shrink:0;
+}
+@keyframes spin { to { transform:rotate(360deg); } }
+
+.nav-links { display:flex; align-items:center; gap:.6rem; }
+.nav-badge {
+  font-family:'Space Mono', monospace;
+  font-size:.68rem; padding:.28rem .8rem;
+  border-radius:20px; border:1px solid rgba(59,130,246,0.3);
+  color:var(--blue); background:rgba(59,130,246,0.08);
+}
+.btn {
+  display:inline-flex; align-items:center; gap:.4rem;
+  font-family:'Syne', sans-serif;
+  font-size:.82rem; font-weight:600; padding:.5rem 1.2rem;
+  border-radius:8px; border:1px solid transparent;
+  cursor:pointer; text-decoration:none;
+  transition: all .22s ease;
+}
+.btn:active { transform:scale(0.96); }
+.btn-primary { background:var(--blue); color:#fff; border-color:var(--blue); }
+.btn-primary:hover { background:#2563eb; box-shadow:0 0 24px rgba(59,130,246,0.45); }
+.btn-outline { background:transparent; color:#e2e8f0; border-color:var(--border); }
+.btn-outline:hover { background:rgba(255,255,255,0.05); border-color:rgba(255,255,255,0.15); }
+.btn-outline-primary {
+  background:transparent; color:var(--blue);
+  border-color:rgba(59,130,246,0.4); font-size:.75rem; padding:.36rem .9rem;
+  transition: all .3s ease;
+}
+.btn-outline-primary:hover { background:rgba(59,130,246,0.1); }
+.btn-sm { font-size:.75rem; padding:.38rem .9rem; }
+
+/* HERO */
+.hero {
+  text-align:center;
+  padding: 5.5rem 1.5rem 3rem;
+}
+.hero-label {
+  display:inline-flex; align-items:center; gap:.5rem;
+  font-family:'Space Mono', monospace;
+  font-size:.68rem; letter-spacing:.2em; text-transform:uppercase;
+  color:var(--cyan); margin-bottom:1.4rem;
+  padding:.3rem 1rem;
+  border:1px solid rgba(6,214,160,0.25);
+  border-radius:20px;
+  background:rgba(6,214,160,0.06);
+}
+.hero-label-dot { width:6px; height:6px; border-radius:50%; background:var(--cyan); animation:pulse 1.8s ease-in-out infinite; }
+@keyframes pulse { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:0.5;transform:scale(0.8)} }
+
+.hero-title {
+  font-size:clamp(2.2rem,6vw,4rem); font-weight:800; line-height:1.1;
+  color:#fff; margin-bottom:1rem;
+  letter-spacing:-.03em;
+}
+.hero-title .grad {
+  background: linear-gradient(135deg, var(--blue) 0%, var(--cyan) 50%, var(--purple) 100%);
+  -webkit-background-clip:text; -webkit-text-fill-color:transparent;
+  background-clip:text;
+}
+.hero-sub {
+  font-size:.92rem; color:#64748b; max-width:440px; margin:0 auto 2.2rem;
+  line-height:1.75; font-weight:400;
+}
+.hero-actions { display:flex; justify-content:center; gap:.75rem; flex-wrap:wrap; }
+
+/* STATS STRIP */
+.stats-strip {
+  display:flex; justify-content:center;
+  margin:0 auto 3.5rem;
+  max-width:800px;
+  padding: 0 1.5rem;
+  gap: 1rem;
+}
+
+.stat-card {
+  flex:1; text-align:center; padding:1.4rem 1rem;
+  border-radius:14px;
+  position:relative; overflow:hidden;
+  border:1px solid var(--border);
+  background: var(--surface);
+  cursor:default;
+  transition: transform .25s ease, box-shadow .25s ease;
+}
+.stat-card:hover { transform:translateY(-4px); }
+
+.stat-card:nth-child(1) {
+  border-color: rgba(59,130,246,0.25);
+  background: linear-gradient(135deg, rgba(59,130,246,0.08) 0%, var(--surface) 60%);
+}
+.stat-card:nth-child(1)::before {
+  content:''; position:absolute; top:0; left:0; right:0; height:2px;
+  background: linear-gradient(90deg, transparent, var(--blue), transparent);
+}
+.stat-card:nth-child(1):hover { box-shadow: 0 8px 32px rgba(59,130,246,0.2); }
+
+.stat-card:nth-child(2) {
+  border-color: rgba(6,214,160,0.25);
+  background: linear-gradient(135deg, rgba(6,214,160,0.08) 0%, var(--surface) 60%);
+}
+.stat-card:nth-child(2)::before {
+  content:''; position:absolute; top:0; left:0; right:0; height:2px;
+  background: linear-gradient(90deg, transparent, var(--cyan), transparent);
+}
+.stat-card:nth-child(2):hover { box-shadow: 0 8px 32px rgba(6,214,160,0.2); }
+
+.stat-card:nth-child(3) {
+  border-color: rgba(167,139,250,0.25);
+  background: linear-gradient(135deg, rgba(167,139,250,0.08) 0%, var(--surface) 60%);
+}
+.stat-card:nth-child(3)::before {
+  content:''; position:absolute; top:0; left:0; right:0; height:2px;
+  background: linear-gradient(90deg, transparent, var(--purple), transparent);
+}
+.stat-card:nth-child(3):hover { box-shadow: 0 8px 32px rgba(167,139,250,0.2); }
+
+.stat-card:nth-child(4) {
+  border-color: rgba(251,191,36,0.25);
+  background: linear-gradient(135deg, rgba(251,191,36,0.08) 0%, var(--surface) 60%);
+}
+.stat-card:nth-child(4)::before {
+  content:''; position:absolute; top:0; left:0; right:0; height:2px;
+  background: linear-gradient(90deg, transparent, var(--yellow), transparent);
+}
+.stat-card:nth-child(4):hover { box-shadow: 0 8px 32px rgba(251,191,36,0.2); }
+
+.stat-icon { font-size:1.4rem; margin-bottom:.5rem; display:block; }
+
+.stat-val {
+  font-family:'Space Mono', monospace;
+  font-size:2rem; font-weight:700; color:#fff;
+  display:block; line-height:1;
+  margin-bottom:.3rem;
+}
+.stat-card:nth-child(1) .stat-val { color: var(--blue); }
+.stat-card:nth-child(2) .stat-val { color: var(--cyan); }
+.stat-card:nth-child(3) .stat-val { color: var(--purple); }
+.stat-card:nth-child(4) .stat-val { color: var(--yellow); }
+
+.stat-lbl {
+  font-size:.68rem; color:#475569; letter-spacing:.1em; text-transform:uppercase;
+  font-family:'Space Mono', monospace;
+}
+
+/* PROJECTS SECTION */
+.projects-section {
+  max-width:1100px; margin:0 auto;
+  padding:0 1.5rem 5rem;
+}
+.section-bar {
+  display:flex; align-items:center; justify-content:space-between;
+  margin-bottom:1.5rem; padding-bottom:1rem;
+  border-bottom:1px solid var(--border);
+}
+.section-title {
+  font-size:.95rem; font-weight:700; color:#e2e8f0;
+  display:flex; align-items:center; gap:.6rem;
+}
+.section-count {
+  font-family:'Space Mono', monospace;
+  font-size:.65rem; padding:.2rem .55rem;
+  border-radius:20px;
+  background:rgba(59,130,246,0.1);
+  color:var(--blue); border:1px solid rgba(59,130,246,0.2);
+  font-weight:400;
+}
+
+/* CARDS */
+.cards-grid {
+  display:grid;
+  grid-template-columns:repeat(auto-fill, minmax(300px,1fr));
+  gap:1.2rem;
+}
+
+/* =============================================
+   YELLOW HOVER ANIMATION ON CARDS
+   ============================================= */
+.card {
+  background: var(--surface);
+  border:1px solid var(--border);
+  border-radius:14px;
+  padding:1.5rem;
+  display:flex; flex-direction:column;
+  text-decoration:none; color:inherit;
+  opacity:0; animation: fadeUp .55s ease forwards;
+  position:relative; overflow:hidden;
+
+  /* Smooth transitions for yellow hover effect */
+  transition:
+    border-color .35s ease,
+    box-shadow .35s ease,
+    transform .35s ease,
+    background .35s ease;
+}
+
+/* Animated yellow shimmer top border */
+.card::before {
+  content:'';
+  position:absolute; top:0; left:-100%; right:0;
+  height:2px;
+  background: linear-gradient(90deg, transparent, var(--yellow), #fff8, var(--yellow), transparent);
+  transition: left .6s ease;
+  z-index:2;
+}
+.card:hover::before {
+  left:100%;
+}
+
+/* Yellow radial glow that follows mouse */
+.card::after {
+  content:'';
+  position:absolute; inset:0; border-radius:14px;
+  background: radial-gradient(circle at var(--mx,50%) var(--my,50%), rgba(251,191,36,0.12) 0%, transparent 65%);
+  pointer-events:none; opacity:0;
+  transition: opacity .4s ease;
+}
+.card:hover::after { opacity:1; }
+
+.card:hover {
+  border-color: rgba(251,191,36,0.55);
+  box-shadow:
+    0 8px 40px rgba(0,0,0,0.5),
+    0 0 0 1px rgba(251,191,36,0.15),
+    0 0 30px rgba(251,191,36,0.12),
+    0 0 60px rgba(251,191,36,0.06);
+  transform: translateY(-5px) scale(1.01);
+  background: linear-gradient(135deg, rgba(251,191,36,0.06) 0%, var(--surface) 50%);
+}
+
+/* Card title turns yellow on hover */
+.card:hover .card-title {
+  color: var(--yellow);
+  transition: color .3s ease;
+}
+.card-title {
+  transition: color .3s ease;
+}
+
+/* Card icon glows yellow on hover */
+.card:hover .card-icon-wrap {
+  border-color: rgba(251,191,36,0.5);
+  background: linear-gradient(135deg, rgba(251,191,36,0.18), rgba(251,191,36,0.08));
+  box-shadow: 0 0 20px rgba(251,191,36,0.25);
+  transition: all .35s ease;
+}
+
+/* Visit button becomes yellow on card hover */
+.card:hover .btn-outline-primary {
+  color: var(--yellow);
+  border-color: rgba(251,191,36,0.5);
+  background: rgba(251,191,36,0.08);
+  box-shadow: 0 0 14px rgba(251,191,36,0.15);
+}
+
+/* Corner sparkle animation */
+.card-sparkle {
+  position:absolute; top:12px; right:12px;
+  width:6px; height:6px;
+  border-radius:50%;
+  background: var(--yellow);
+  opacity:0;
+  transform: scale(0);
+  transition: opacity .3s ease, transform .3s ease;
+  box-shadow: 0 0 8px var(--yellow), 0 0 16px var(--yellow);
+}
+.card:hover .card-sparkle {
+  opacity:1;
+  transform: scale(1);
+  animation: sparkle-pulse 1.2s ease-in-out infinite;
+}
+@keyframes sparkle-pulse {
+  0%,100% { opacity:1; transform:scale(1); box-shadow: 0 0 8px var(--yellow), 0 0 16px var(--yellow); }
+  50%     { opacity:0.5; transform:scale(1.6); box-shadow: 0 0 14px var(--yellow), 0 0 28px rgba(251,191,36,0.4); }
+}
+
+/* Tags highlight on hover */
+.card:hover .tag {
+  border-color: rgba(251,191,36,0.2);
+  color: #92855a;
+  transition: all .3s ease;
+}
+
+/* Card footer border turns yellow */
+.card:hover .card-footer {
+  border-color: rgba(251,191,36,0.15);
+  transition: border-color .3s ease;
+}
+
+/* Meta dot pulses yellow */
+.card:hover .card-meta-dot {
+  background: var(--yellow);
+  box-shadow: 0 0 8px var(--yellow);
+  animation: dot-pulse 1s ease-in-out infinite;
+  transition: background .3s ease;
+}
+@keyframes dot-pulse {
+  0%,100% { opacity:1; }
+  50% { opacity:0.4; }
+}
+
+/* =============================================
+   END YELLOW HOVER
+   ============================================= */
+
+.card:nth-child(1) { animation-delay:.08s; }
+.card:nth-child(2) { animation-delay:.18s; }
+.card:nth-child(3) { animation-delay:.28s; }
+.card:nth-child(4) { animation-delay:.38s; }
+.card:nth-child(5) { animation-delay:.48s; }
+.card:nth-child(6) { animation-delay:.58s; }
+
+@keyframes fadeUp {
+  from { opacity:0; transform:translateY(24px); }
+  to   { opacity:1; transform:translateY(0); }
+}
+
+.card-top {
+  display:flex; align-items:flex-start; justify-content:space-between;
+  margin-bottom:1.1rem;
+}
+.card-icon-wrap {
+  width:46px; height:46px; border-radius:12px;
+  background: linear-gradient(135deg, rgba(59,130,246,0.15), rgba(6,214,160,0.1));
+  border:1px solid rgba(59,130,246,0.2);
+  display:flex; align-items:center; justify-content:center;
+  font-size:1.35rem;
+  box-shadow: 0 0 20px rgba(59,130,246,0.1);
+  transition: all .35s ease;
+}
+.card-status {
+  font-family:'Space Mono', monospace;
+  font-size:.6rem; padding:.2rem .55rem;
+  border-radius:20px; text-transform:uppercase; letter-spacing:.1em;
+  position:relative;
+}
+.status-live {
+  background:rgba(6,214,160,0.1); color:#06d6a0;
+  border:1px solid rgba(6,214,160,0.25);
+}
+.status-live::before {
+  content:''; display:inline-block;
+  width:5px; height:5px; border-radius:50%;
+  background:#06d6a0; margin-right:.4rem;
+  animation: blink 1.5s ease-in-out infinite;
+  vertical-align:middle; margin-top:-1px;
+}
+@keyframes blink { 0%,100%{opacity:1} 50%{opacity:0.3} }
+
+.status-beta   { background:rgba(251,191,36,0.1); color:#fbbf24; border:1px solid rgba(251,191,36,0.25); }
+.status-build  { background:rgba(167,139,250,0.1); color:#a78bfa; border:1px solid rgba(167,139,250,0.25); }
+
+.card-title { font-size:1.05rem; font-weight:700; color:#fff; margin-bottom:.4rem; }
+.card-desc { font-size:.8rem; color:#64748b; line-height:1.7; margin-bottom:1.2rem; flex:1; font-weight:400; }
+
+.card-tags { display:flex; flex-wrap:wrap; gap:.35rem; margin-bottom:1.2rem; }
+.tag {
+  font-family:'Space Mono', monospace;
+  font-size:.6rem; padding:.2rem .55rem;
+  border-radius:5px; background:rgba(255,255,255,0.04);
+  color:#475569; border:1px solid var(--border);
+  letter-spacing:.05em;
+  transition: all .3s ease;
+}
+
+.card-footer {
+  display:flex; align-items:center; justify-content:space-between;
+  padding-top:1rem; border-top:1px solid var(--border);
+  transition: border-color .3s ease;
+}
+.card-meta {
+  font-family:'Space Mono', monospace;
+  font-size:.65rem; color:#334155;
+  display:flex; align-items:center; gap:.4rem;
+}
+.card-meta-dot {
+  width:5px; height:5px; border-radius:50%;
+  background: linear-gradient(135deg, var(--blue), var(--cyan));
+  flex-shrink:0;
+  transition: background .3s ease, box-shadow .3s ease;
+}
+
+/* FOOTER */
+footer {
+  text-align:center; padding:2rem;
+  border-top:1px solid var(--border);
+}
+.footer-text {
+  font-family:'Space Mono', monospace;
+  font-size:.68rem; color:#1e293b;
+}
+
+/* RESPONSIVE */
+@media(max-width:640px){
+  .hero { padding:4rem 1rem 2.5rem; }
+  .cards-grid { grid-template-columns:1fr; }
+  .stats-strip { flex-direction:column; gap:.75rem; }
+}
+</style>
+</head>
+<body>
+
+<canvas id="codeCanvas"></canvas>
+<div class="bg-overlay"></div>
+
+<!-- HERO -->
+<div class="hero">
+  <span class="hero-label">
+    <span class="hero-label-dot"></span>
+    Portfolio
+  </span>
+</div>
+
+<!-- STATS -->
+<div class="stats-strip">
+  <div class="stat-card">
+    <span class="stat-icon">🚀</span>
+    <span class="stat-val" id="totalProjects" data-target="2">2</span>
+    <span class="stat-lbl">Projects</span>
+  </div>
+  <div class="stat-card">
+    <span class="stat-icon">✅</span>
+    <span class="stat-val" id="liveCount" data-target="2">2</span>
+    <span class="stat-lbl">Live</span>
+  </div>
+  <div class="stat-card">
+    <span class="stat-icon">🧪</span>
+    <span class="stat-val" id="betaCount" data-target="0">0</span>
+    <span class="stat-lbl">Beta</span>
+  </div>
+  <div class="stat-card">
+    <span class="stat-icon">⚙️</span>
+    <span class="stat-val" id="tagCount" data-target="4">4</span>
+    <span class="stat-lbl">Technologies</span>
+  </div>
+</div>
+
+<!-- PROJECTS -->
+<div class="projects-section" id="projects">
+  <div class="section-bar">
+    <div class="section-title">
+      <span>📁</span> All Projects
+      <span class="section-count" id="sectionCount">2</span>
+    </div>
+    <div style="display:flex;gap:.5rem;">
+      <button class="btn btn-outline btn-sm">Filter</button>
+      <button class="btn btn-outline btn-sm">Sort</button>
+    </div>
+  </div>
+  <div class="cards-grid" id="cardsGrid"></div>
+</div>
+
+<!-- FOOTER -->
+<footer>
+  <p class="footer-text">&copy; 2026 &nbsp;·&nbsp; All Rights Reserved</p>
+</footer>
+
+<script>
+// PROJECT DATA
+const projects = [
+  {
+    title: "Resume Builder Pro",
+    desc: "Resume Builder Pro is a powerful and easy-to-use resume creation app designed to help you build professional, ATS-friendly resumes in just a few minutes. Whether you're a fresher, experienced professional, or switching careers, this app helps you craft a resume that stands out.",
+    url: "https://quickresume0.netlify.app/",
+    icon: "📝",
+    tags: ["Resume", "PDF", "Free"],
+    status: "live",
+    meta: "Web App"
+  },
+  {
+    title: "Resume Builder Pro — Mobile",
+    desc: "Resume Builder Pro is a powerful and easy-to-use resume creation app designed to help you build professional, ATS-friendly resumes in just a few minutes. Whether you're a fresher, experienced professional, or switching careers, this app helps you craft a resume that stands out.",
+    url: "https://myquickresume.netlify.app/",
+    icon: "📱",
+    tags: ["Resume", "PDF", "Mobile"],
+    status: "live",
+    meta: "Mobile App"
+  }
+];
+
+// RENDER CARDS
+const grid = document.getElementById('cardsGrid');
+const statusMap = {
+  live:  ['status-live',  'Live'],
+  beta:  ['status-beta',  'Beta'],
+  build: ['status-build', 'Building']
+};
+
+projects.forEach(p => {
+  const [cls, lbl] = statusMap[p.status] || statusMap.live;
+  const tags = p.tags.map(t => `<span class="tag">${t}</span>`).join('');
+  const card = document.createElement('a');
+  card.href = p.url;
+  card.target = '_blank';
+  card.rel = 'noopener noreferrer';
+  card.className = 'card';
+  card.innerHTML = `
+    <div class="card-sparkle"></div>
+    <div class="card-top">
+      <div class="card-icon-wrap">${p.icon}</div>
+      <span class="card-status ${cls}">${lbl}</span>
+    </div>
+    <div class="card-title">${p.title}</div>
+    <p class="card-desc">${p.desc}</p>
+    <div class="card-tags">${tags}</div>
+    <div class="card-footer">
+      <span class="card-meta">
+        <span class="card-meta-dot"></span>${p.meta}
+      </span>
+      <a href="${p.url}" target="_blank" rel="noopener" class="btn btn-outline-primary" onclick="event.stopPropagation()">
+        Visit ↗
+      </a>
+    </div>`;
+
+  // Mouse glow effect (yellow radial follows cursor)
+  card.addEventListener('mousemove', e => {
+    const r = card.getBoundingClientRect();
+    const x = ((e.clientX - r.left) / r.width * 100).toFixed(1);
+    const y = ((e.clientY - r.top)  / r.height * 100).toFixed(1);
+    card.style.setProperty('--mx', x + '%');
+    card.style.setProperty('--my', y + '%');
+  });
+
+  grid.appendChild(card);
+});
+
+// UPDATE COUNTS
+const total = projects.length;
+const live  = projects.filter(p => p.status === 'live').length;
+const tags  = new Set(projects.flatMap(p => p.tags)).size;
+document.getElementById('sectionCount').textContent = total;
+document.getElementById('totalProjects').dataset.target = total;
+document.getElementById('liveCount').dataset.target     = live;
+document.getElementById('tagCount').dataset.target      = tags;
+
+// COUNT-UP ANIMATION
+function countUp(el) {
+  const target = parseInt(el.dataset.target);
+  const dur = 1200;
+  const step = 16;
+  const steps = dur / step;
+  let cur = 0;
+  const inc = target / steps;
+  const timer = setInterval(() => {
+    cur = Math.min(cur + inc, target);
+    el.textContent = Math.round(cur);
+    if (cur >= target) clearInterval(timer);
+  }, step);
+}
+
+const statsEl = document.querySelector('.stats-strip');
+const obs = new IntersectionObserver(entries => {
+  entries.forEach(e => {
+    if (e.isIntersecting) {
+      document.querySelectorAll('.stat-val').forEach(countUp);
+      obs.disconnect();
+    }
+  });
+}, { threshold: 0.5 });
+obs.observe(statsEl);
+
+// CODE RAIN ANIMATION
+const canvas = document.getElementById('codeCanvas');
+const ctx    = canvas.getContext('2d');
+
+const snippets = [
+  'const','function','return','if','else','for','while','class',
+  'import','export','async','await','let','var','=>','.map(',
+  '.filter(','.then(','{','}','[]','null','true','false',
+  '===','!==','&&','||','++','--','//',':','();','[];'
+];
+
+let cols, drops, W, H;
+const FONT_SIZE = 12;
+const COLORS = ['#3b82f6','#06d6a0','#a78bfa','#f472b6','#fbbf24','#60a5fa'];
+
+function resize(){
+  W = canvas.width  = window.innerWidth;
+  H = canvas.height = window.innerHeight;
+  cols  = Math.floor(W / (FONT_SIZE * 5.5));
+  drops = Array(cols).fill(1).map(() => Math.random() * -60);
+}
+resize();
+window.addEventListener('resize', resize);
+
+function draw(){
+  ctx.fillStyle = 'rgba(10,13,20,0.18)';
+  ctx.fillRect(0,0,W,H);
+  drops.forEach((y, i) => {
+    const word  = snippets[Math.floor(Math.random() * snippets.length)];
+    const color = COLORS[Math.floor(Math.random() * COLORS.length)];
+    ctx.fillStyle = color;
+    ctx.font = `${FONT_SIZE}px "Courier New", monospace`;
+    ctx.fillText(word, i * (FONT_SIZE * 5.5), y * FONT_SIZE);
+    if(y * FONT_SIZE > H && Math.random() > 0.97) drops[i] = 0;
+    drops[i] += 0.4;
+  });
+}
+setInterval(draw, 60);
+</script>
+</body>
+</html>
