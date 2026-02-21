@@ -236,9 +236,6 @@ nav {
   gap:1.2rem;
 }
 
-/* =============================================
-   YELLOW HOVER ANIMATION ON CARDS
-   ============================================= */
 .card {
   background: var(--surface);
   border:1px solid var(--border);
@@ -248,123 +245,96 @@ nav {
   text-decoration:none; color:inherit;
   opacity:0; animation: fadeUp .55s ease forwards;
   position:relative; overflow:hidden;
-
-  /* Smooth transitions for yellow hover effect */
-  transition:
-    border-color .35s ease,
-    box-shadow .35s ease,
-    transform .35s ease,
-    background .35s ease;
+  --hover-color: #06d6a0;
+  --hover-rgb: 6,214,160;
+  transition: border-color .35s ease, box-shadow .35s ease, transform .35s ease, background .35s ease;
 }
 
-/* Animated yellow shimmer top border */
+.card[data-status="live"]     { --hover-color: #06d6a0; --hover-rgb: 6,214,160; }
+.card[data-status="beta"]     { --hover-color: #3b82f6; --hover-rgb: 59,130,246; }
+.card[data-status="build"]    { --hover-color: #fbbf24; --hover-rgb: 251,191,36; }
+.card[data-status="progress"] { --hover-color: #fbbf24; --hover-rgb: 251,191,36; }
+
 .card::before {
   content:'';
   position:absolute; top:0; left:-100%; right:0;
   height:2px;
-  background: linear-gradient(90deg, transparent, var(--yellow), #fff8, var(--yellow), transparent);
+  background: linear-gradient(90deg, transparent, var(--hover-color), #fff8, var(--hover-color), transparent);
   transition: left .6s ease;
   z-index:2;
 }
-.card:hover::before {
-  left:100%;
-}
+.card:hover::before { left:100%; }
 
-/* Yellow radial glow that follows mouse */
 .card::after {
   content:'';
   position:absolute; inset:0; border-radius:14px;
-  background: radial-gradient(circle at var(--mx,50%) var(--my,50%), rgba(251,191,36,0.12) 0%, transparent 65%);
+  background: radial-gradient(circle at var(--mx,50%) var(--my,50%), rgba(var(--hover-rgb),0.12) 0%, transparent 65%);
   pointer-events:none; opacity:0;
   transition: opacity .4s ease;
 }
 .card:hover::after { opacity:1; }
 
 .card:hover {
-  border-color: rgba(251,191,36,0.55);
+  border-color: rgba(var(--hover-rgb),0.55);
   box-shadow:
     0 8px 40px rgba(0,0,0,0.5),
-    0 0 0 1px rgba(251,191,36,0.15),
-    0 0 30px rgba(251,191,36,0.12),
-    0 0 60px rgba(251,191,36,0.06);
+    0 0 0 1px rgba(var(--hover-rgb),0.15),
+    0 0 30px rgba(var(--hover-rgb),0.12),
+    0 0 60px rgba(var(--hover-rgb),0.06);
   transform: translateY(-5px) scale(1.01);
-  background: linear-gradient(135deg, rgba(251,191,36,0.06) 0%, var(--surface) 50%);
+  background: linear-gradient(135deg, rgba(var(--hover-rgb),0.06) 0%, var(--surface) 50%);
 }
 
-/* Card title turns yellow on hover */
-.card:hover .card-title {
-  color: var(--yellow);
-  transition: color .3s ease;
-}
-.card-title {
-  transition: color .3s ease;
-}
+.card-title { transition: color .3s ease; }
+.card:hover .card-title { color: var(--hover-color); }
 
-/* Card icon glows yellow on hover */
+.card-icon-wrap { transition: all .35s ease; }
 .card:hover .card-icon-wrap {
-  border-color: rgba(251,191,36,0.5);
-  background: linear-gradient(135deg, rgba(251,191,36,0.18), rgba(251,191,36,0.08));
-  box-shadow: 0 0 20px rgba(251,191,36,0.25);
-  transition: all .35s ease;
+  border-color: rgba(var(--hover-rgb),0.5);
+  background: linear-gradient(135deg, rgba(var(--hover-rgb),0.18), rgba(var(--hover-rgb),0.08));
+  box-shadow: 0 0 20px rgba(var(--hover-rgb),0.25);
 }
 
-/* Visit button becomes yellow on card hover */
 .card:hover .btn-outline-primary {
-  color: var(--yellow);
-  border-color: rgba(251,191,36,0.5);
-  background: rgba(251,191,36,0.08);
-  box-shadow: 0 0 14px rgba(251,191,36,0.15);
+  color: var(--hover-color);
+  border-color: rgba(var(--hover-rgb),0.5);
+  background: rgba(var(--hover-rgb),0.08);
+  box-shadow: 0 0 14px rgba(var(--hover-rgb),0.15);
 }
 
-/* Corner sparkle animation */
 .card-sparkle {
   position:absolute; top:12px; right:12px;
-  width:6px; height:6px;
-  border-radius:50%;
-  background: var(--yellow);
-  opacity:0;
-  transform: scale(0);
+  width:6px; height:6px; border-radius:50%;
+  background: var(--hover-color);
+  opacity:0; transform: scale(0);
   transition: opacity .3s ease, transform .3s ease;
-  box-shadow: 0 0 8px var(--yellow), 0 0 16px var(--yellow);
+  box-shadow: 0 0 8px var(--hover-color), 0 0 16px var(--hover-color);
 }
 .card:hover .card-sparkle {
-  opacity:1;
-  transform: scale(1);
+  opacity:1; transform: scale(1);
   animation: sparkle-pulse 1.2s ease-in-out infinite;
 }
 @keyframes sparkle-pulse {
-  0%,100% { opacity:1; transform:scale(1); box-shadow: 0 0 8px var(--yellow), 0 0 16px var(--yellow); }
-  50%     { opacity:0.5; transform:scale(1.6); box-shadow: 0 0 14px var(--yellow), 0 0 28px rgba(251,191,36,0.4); }
+  0%,100% { opacity:1; transform:scale(1); }
+  50%     { opacity:0.5; transform:scale(1.6); }
 }
 
-/* Tags highlight on hover */
-.card:hover .tag {
-  border-color: rgba(251,191,36,0.2);
-  color: #92855a;
-  transition: all .3s ease;
-}
+.tag { transition: all .3s ease; }
+.card:hover .tag { border-color: rgba(var(--hover-rgb),0.2); color: #8a8a8a; }
 
-/* Card footer border turns yellow */
-.card:hover .card-footer {
-  border-color: rgba(251,191,36,0.15);
-  transition: border-color .3s ease;
-}
+.card-footer { transition: border-color .3s ease; }
+.card:hover .card-footer { border-color: rgba(var(--hover-rgb),0.15); }
 
-/* Meta dot pulses yellow */
+.card-meta-dot { transition: background .3s ease, box-shadow .3s ease; }
 .card:hover .card-meta-dot {
-  background: var(--yellow);
-  box-shadow: 0 0 8px var(--yellow);
+  background: var(--hover-color);
+  box-shadow: 0 0 8px var(--hover-color);
   animation: dot-pulse 1s ease-in-out infinite;
-  transition: background .3s ease;
 }
-@keyframes dot-pulse {
-  0%,100% { opacity:1; }
-  50% { opacity:0.4; }
-}
+@keyframes dot-pulse { 0%,100%{opacity:1} 50%{opacity:0.4} }
 
-/* =============================================
-   END YELLOW HOVER
-   ============================================= */
+.section-title { color: #ef4444; }
+.section-title .section-count { color: var(--blue); }
 
 .card:nth-child(1) { animation-delay:.08s; }
 .card:nth-child(2) { animation-delay:.18s; }
@@ -410,7 +380,7 @@ nav {
 }
 @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0.3} }
 
-.status-beta   { background:rgba(251,191,36,0.1); color:#fbbf24; border:1px solid rgba(251,191,36,0.25); }
+.status-beta   { background:rgba(59,130,246,0.1); color:#3b82f6; border:1px solid rgba(59,130,246,0.25); }
 .status-build  { background:rgba(167,139,250,0.1); color:#a78bfa; border:1px solid rgba(167,139,250,0.25); }
 
 .card-title { font-size:1.05rem; font-weight:700; color:#fff; margin-bottom:.4rem; }
@@ -474,16 +444,16 @@ footer {
   </span>
 </div>
 
-<!-- STATS -->
+<!-- STATS — values injected by JS -->
 <div class="stats-strip">
   <div class="stat-card">
     <span class="stat-icon">🚀</span>
-    <span class="stat-val" id="totalProjects" data-target="2">2</span>
+    <span class="stat-val" id="totalProjects" data-target="0">0</span>
     <span class="stat-lbl">Projects</span>
   </div>
   <div class="stat-card">
     <span class="stat-icon">✅</span>
-    <span class="stat-val" id="liveCount" data-target="2">2</span>
+    <span class="stat-val" id="liveCount" data-target="0">0</span>
     <span class="stat-lbl">Live</span>
   </div>
   <div class="stat-card">
@@ -493,8 +463,8 @@ footer {
   </div>
   <div class="stat-card">
     <span class="stat-icon">⚙️</span>
-    <span class="stat-val" id="tagCount" data-target="4">4</span>
-    <span class="stat-lbl">Technologies</span>
+    <span class="stat-val" id="buildCount" data-target="0">0</span>
+    <span class="stat-lbl">Build</span>
   </div>
 </div>
 
@@ -503,7 +473,7 @@ footer {
   <div class="section-bar">
     <div class="section-title">
       <span>📁</span> All Projects
-      <span class="section-count" id="sectionCount">2</span>
+      <span class="section-count" id="sectionCount">0</span>
     </div>
     <div style="display:flex;gap:.5rem;">
       <button class="btn btn-outline btn-sm">Filter</button>
@@ -519,11 +489,13 @@ footer {
 </footer>
 
 <script>
-// PROJECT DATA
+// =============================================
+// PROJECT DATA — add/remove projects here only
+// All counts update automatically
+// =============================================
 const projects = [
   {
     title: "Resume Builder Pro",
-    desc: "Resume Builder Pro is a powerful and easy-to-use resume creation app designed to help you build professional, ATS-friendly resumes in just a few minutes. Whether you're a fresher, experienced professional, or switching careers, this app helps you craft a resume that stands out.",
     url: "https://quickresume0.netlify.app/",
     icon: "📝",
     tags: ["Resume", "PDF", "Free"],
@@ -532,16 +504,56 @@ const projects = [
   },
   {
     title: "Resume Builder Pro — Mobile",
-    desc: "Resume Builder Pro is a powerful and easy-to-use resume creation app designed to help you build professional, ATS-friendly resumes in just a few minutes. Whether you're a fresher, experienced professional, or switching careers, this app helps you craft a resume that stands out.",
     url: "https://myquickresume.netlify.app/",
     icon: "📱",
     tags: ["Resume", "PDF", "Mobile"],
     status: "live",
     meta: "Mobile App"
+  },
+  {
+    title: "Game : Nebula Strike",
+    url: "https://strikeking.netlify.app/",
+    icon: "🎮",
+    tags: ["Game", "Retro", "Arcade"],
+    status: "beta",
+    meta: "Web App"
+  },
+  {
+    title: "SecurePass",
+    url: "https://mpassword.netlify.app/",
+    icon: "🔑",
+    tags: ["Password", "Key", "Secure"],
+    status: "live",
+    meta: "Web App"
+  },
+  {
+    title: "Game : STELLAR MATCH",
+    url: "https://setmemory.netlify.app/",
+    icon: "🃏",
+    tags: ["Game", "Memory", "Match"],
+    status: "build",
+    meta: "Web App"
   }
 ];
 
+// =============================================
+// DYNAMIC COUNT COMPUTATION
+// =============================================
+const total = projects.length;
+const live  = projects.filter(p => p.status === 'live').length;
+const beta  = projects.filter(p => p.status === 'beta').length;
+const build = projects.filter(p => p.status === 'build').length;
+
+// Set data-target attributes dynamically
+document.getElementById('totalProjects').dataset.target = total;
+document.getElementById('liveCount').dataset.target     = live;
+document.getElementById('betaCount').dataset.target     = beta;
+document.getElementById('buildCount').dataset.target    = build;
+document.getElementById('sectionCount').textContent     = total;
+
+// =============================================
 // RENDER CARDS
+// =============================================
 const grid = document.getElementById('cardsGrid');
 const statusMap = {
   live:  ['status-live',  'Live'],
@@ -557,6 +569,7 @@ projects.forEach(p => {
   card.target = '_blank';
   card.rel = 'noopener noreferrer';
   card.className = 'card';
+  card.dataset.status = p.status;
   card.innerHTML = `
     <div class="card-sparkle"></div>
     <div class="card-top">
@@ -564,7 +577,6 @@ projects.forEach(p => {
       <span class="card-status ${cls}">${lbl}</span>
     </div>
     <div class="card-title">${p.title}</div>
-    <p class="card-desc">${p.desc}</p>
     <div class="card-tags">${tags}</div>
     <div class="card-footer">
       <span class="card-meta">
@@ -575,7 +587,6 @@ projects.forEach(p => {
       </a>
     </div>`;
 
-  // Mouse glow effect (yellow radial follows cursor)
   card.addEventListener('mousemove', e => {
     const r = card.getBoundingClientRect();
     const x = ((e.clientX - r.left) / r.width * 100).toFixed(1);
@@ -587,18 +598,12 @@ projects.forEach(p => {
   grid.appendChild(card);
 });
 
-// UPDATE COUNTS
-const total = projects.length;
-const live  = projects.filter(p => p.status === 'live').length;
-const tags  = new Set(projects.flatMap(p => p.tags)).size;
-document.getElementById('sectionCount').textContent = total;
-document.getElementById('totalProjects').dataset.target = total;
-document.getElementById('liveCount').dataset.target     = live;
-document.getElementById('tagCount').dataset.target      = tags;
-
+// =============================================
 // COUNT-UP ANIMATION
+// =============================================
 function countUp(el) {
-  const target = parseInt(el.dataset.target);
+  const target = parseInt(el.dataset.target) || 0;
+  if (target === 0) { el.textContent = 0; return; }
   const dur = 1200;
   const step = 16;
   const steps = dur / step;
@@ -622,7 +627,9 @@ const obs = new IntersectionObserver(entries => {
 }, { threshold: 0.5 });
 obs.observe(statsEl);
 
+// =============================================
 // CODE RAIN ANIMATION
+// =============================================
 const canvas = document.getElementById('codeCanvas');
 const ctx    = canvas.getContext('2d');
 
