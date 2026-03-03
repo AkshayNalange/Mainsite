@@ -348,6 +348,8 @@ nav {
 .card:nth-child(4) { animation-delay:.38s; }
 .card:nth-child(5) { animation-delay:.48s; }
 .card:nth-child(6) { animation-delay:.58s; }
+.card:nth-child(7) { animation-delay:.68s; }
+.card:nth-child(8) { animation-delay:.78s; }
 
 @keyframes fadeUp {
   from { opacity:0; transform:translateY(24px); }
@@ -547,25 +549,21 @@ nav{top:30px!important}
     <span class="stat-icon">🚀</span>
     <span class="stat-val" id="totalProjects" data-target="0">0</span>
     <span class="stat-lbl">Projects</span>
-    
   </div>
   <div class="stat-card" data-filter="live">
     <span class="stat-icon">✅</span>
     <span class="stat-val" id="liveCount" data-target="0">0</span>
     <span class="stat-lbl">Live</span>
-    
   </div>
   <div class="stat-card" data-filter="beta">
     <span class="stat-icon">🧪</span>
     <span class="stat-val" id="betaCount" data-target="0">0</span>
     <span class="stat-lbl">Beta</span>
-  
   </div>
   <div class="stat-card" data-filter="build">
     <span class="stat-icon">⚙️</span>
     <span class="stat-val" id="buildCount" data-target="0">0</span>
     <span class="stat-lbl">Build</span>
-   
   </div>
 </div>
 
@@ -576,7 +574,6 @@ nav{top:30px!important}
       <span>📁</span> All Projects
       <span class="section-count" id="sectionCount">0</span>
     </div>
-   
   </div>
   <div class="cards-grid" id="cardsGrid"></div>
 </div>
@@ -637,6 +634,22 @@ const projects = [
     url: "https://scrollup.netlify.app/",
     icon: "👾",
     tags: ["Scroll", "MeMe", "AI"],
+    status: "live",
+    meta: "Web App"
+  },
+  {
+    title: "Space Pirate",
+    url: "https://spacepirate.vercel.app/",
+    icon: "🛰️",
+    tags: ["Space", "Pirate", "Explore"],
+    status: "live",
+    meta: "Web App"
+  },
+  {
+    title: "Mind Store",
+    url: "https://mindstore.vercel.app/",
+    icon: "📚",
+    tags: ["Knowledge", "Links", "Free"],
     status: "live",
     meta: "Web App"
   }
